@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KaVi - Virtual Keyboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <link rel="icon" type="image/png" href="kavi_kbd.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
+
+    <style>
+        @font-face {
+            font-family: 'TantularKawi';
+            src: url('font/TantularKawi.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'TamrakaKawi';
+            src: url('font/TamrakaKawi.woff2') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'NotoSansKawi';
+            src: url('font/NotoSansKawi-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'JaladriKawi';
+            src: url('font/JaladriKawi.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Amoghaphasa';
+            src: url('font/Amoghaphasa.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+
+        .navbar-text {
+            font-size: 18px;
+        }
+
+        body,
+        #inputField,
+        .primary-layer button,
+        .secondary-layer button {
+            font-family: 'TantularKawi', Arial, sans-serif;
+            font-size: 23px;
+        }
+
+        body {
+            font-family: 'TantularKawi', Arial, sans-serif;
+        }
+
+        #inputField {
+            word-wrap: break-word;
+            height: 200px;
+        }
+
+        .keyboard {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .keyboard button {
+            font-size: 23px;
+        }
+
+        @media (max-width: 768px) {
+
+            .keyboard.primary-layer,
+            .keyboard.secondary-layer {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 5px;
+            }
+
+            .keyboard.primary-layer button,
+            .keyboard.secondary-layer button {
+                font-size: 18px;
+            }
+
+            .max-width-mobile {
+                max-width: 100%;
+                margin: 0 auto;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container mt-3">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="https://kawisociety.org/keyboard">
+                <img src="kavi_kbd.png" alt="KaVi Keyboard Logo" width="40" height="40">
+                KaVi Keyboard 𑽏
+            </a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item navbar-text">
+                        <a href="index.html"> Home </a> | <a href="about.html"> About </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="form-group">
+            <label for="fontSelect">Select Font:</label>
+            <select class="form-control" id="fontSelect">
+                <option value="TantularKawi">Tantular Kawi</option>
+                <option value="TamrakaKawi">Tamraka Kawi</option>
+                <option value="NotoSansKawi">Noto Sans Kawi</option>
+                <option value="JaladriKawi">Jaladri Kawi</option>
+                <option value="Amoghaphasa">Amoghaphasa</option>
+
+
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="fontSizeSlider">Font Size:</label>
+            <input type="range" class="form-control-range" id="fontSizeSlider" min="20" max="60" step="2" value="20">
+        </div>
+
+        <div class="form-group">
+            <textarea class="form-control" id="inputField" placeholder="Ketik teks di sini..."
+                style="font-size: 20px;"></textarea>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary btn-block" id="copyButton">Copy</button>
+            <button class="btn btn-danger btn-block" id="clearButton">Clear</button>
+            <button class="btn btn-secondary btn-block" id="shiftButton">Symbols</button>
+            <button class="btn btn-secondary btn-block" id="backspaceButton">← Backspace</button>
+            <button class="btn btn-success btn-block" id="exportButton">Export as Image</button>
+            <button class="btn btn-success btn-block" id="exportPDFButton">Export as PDF*</button>
+        </div>
+
+        <div class="keyboard primary-layer">
+            <!-- First Row -->
+            <button class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="+ā">𑼴</button>
+            <button class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="+i">𑼶</button>
+            <button class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="+ī">𑼷</button>
+            <button class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="+u">𑼸</button>
+            <button class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="+ū">𑼹</button>
+            <button class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="+ṛ">𑼺</button>
+            <button class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="+e">𑼾</button>
+            <button class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="+ai">𑼿</button>
+            <button class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="+ə">𑽀</button>
+            <button class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="+killer">𑽁</button>
+            <button class="btn btn-primary" data-toggle="tooltip" data-placement="top"
+                title="conjoiner (ligature)">𑽂</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ai">𑼏</button>
+
+            <!-- Second Row -->
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="a">𑼄</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ā">𑼅</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="i">𑼆</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ī">𑼇</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="u">𑼈</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ū">𑼉</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ṛ">𑼊</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ṝ">𑼋</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ḷ">𑼌</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ḹ">𑼍</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="e">𑼎</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="o">𑼐</button>
+
+            <!-- Third Row -->
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ka">𑼒</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="kha">𑼓</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ga">𑼔</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="gha">𑼕</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="nga">𑼖</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ca">𑼗</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="cha">𑼘</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ja">𑼙</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="jha">𑼚</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="nya">𑼛</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ta">𑼜</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="tha">𑼝</button>
+
+            <!-- Fourth Row -->
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="da">𑼞</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="dha">𑼟</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="nna">𑼠</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ta">𑼡</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="tta">𑼢</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="dda">𑼣</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ddha">𑼤</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="na">𑼥</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="pa">𑼦</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="pha">𑼧</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ba">𑼨</button>
+
+            <!-- Fifth Row -->
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="bha">𑼩</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ma">𑼪</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ya">𑼫</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ra">𑼬</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="la">𑼭</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="wa">𑼮</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="sha">𑼯</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ssa">𑼰</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="sa">𑼱</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="ha">𑼲</button>
+            <button class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="+ng">𑼁</button>
+            <button class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="repha">𑼂</button>
+            <button class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="+ḥ">𑼃</button>
+
+        </div>
+        <div class="keyboard secondary-layer" style="display: none;">
+            <!-- First Row -->
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="number 0">𑽐</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="number 1">𑽑</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="number 2">𑽒</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="number 3">𑽓</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="number 4">𑽔</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="number 5">𑽕</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="number 6">𑽖</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="number 7">𑽗</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="number 8">𑽘</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="number 9">𑽙</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="danda">𑽃</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                title="double danda">𑽄</button>
+
+            <!-- Fifth Row -->
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                title="section marker">𑽅</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                title="alternate section marker">𑽆</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                title="alternate +ā ">𑼵</button>
+
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="flower">𑽇</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                title="space filler">𑽈</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="dot">𑽉</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="double dots">𑽊</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="triple dots">𑽋</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="circle">𑽌</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                title="filled circle">𑽍</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="spiral">𑽎</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                title="closing spiral">𑽏</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="jnya">𑼳</button>
+            <button class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="+ṁ">𑼀</button>
+        </div>
+
+    </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script>
+
+    const customFontTantularKawi = new FontFace('TantularKawi', 'url(TantularKawi.woff)');
+    const customFontTamrakaKawi = new FontFace('TamrakaKawi', 'url(TamrakaKawi.woff2)');
+    const customFontNotoSansKawi = new FontFace('NotoSansKawi', 'url(NotoSansKawi-Regular.ttf)');
+    const customFontJaladriKawi = new FontFace('JaladriKawi', 'url(JaladriKawi.ttf)');
+    const customFontAmoghaphasa = new FontFace('Amoghaphasa', 'url(Amoghaphasa.ttf)');
+
+
+
+    Promise.all([
+        customFontTantularKawi.load(),
+        customFontTamrakaKawi.load(),
+        customFontNotoSansKawi.load()
+    ]).then(loadedFonts => {
+        loadedFonts.forEach(loadedFont => {
+            document.fonts.add(loadedFont);
+        });
+    })
+        .catch(error => {
+            console.error('Font loading failed:', error);
+        });
+
+
+    // Function in a text area
+    function insertAtCursor(textArea, newText) {
+        const start = textArea.selectionStart;
+        const end = textArea.selectionEnd;
+
+        const currentValue = textArea.value;
+
+        const newValue =
+            currentValue.substring(0, start) +
+            newText +
+            currentValue.substring(end);
+
+        textArea.value = newValue;
+
+        const newCursorPosition = start + newText.length;
+        textArea.setSelectionRange(newCursorPosition, newCursorPosition);
+
+        const inputEvent = new Event('input', {
+            bubbles: true,
+            cancelable: true,
+        });
+        textArea.dispatchEvent(inputEvent);
+
+        textArea.focus();
+    }
+
+    function handleClick(key) {
+        const inputField = document.getElementById('inputField');
+        const cursorPosition = inputField.selectionStart;
+        const currentValue = inputField.value;
+
+        const newValue =
+            currentValue.substring(0, cursorPosition) +
+            key +
+            currentValue.substring(cursorPosition);
+
+        inputField.value = newValue;
+
+        const newCursorPosition = cursorPosition + key.length;
+        inputField.setSelectionRange(newCursorPosition, newCursorPosition);
+
+        const inputEvent = new Event('input', {
+            bubbles: true,
+            cancelable: true,
+        });
+        inputField.dispatchEvent(inputEvent);
+
+        inputField.focus();
+    }
+
+
+    // Click events 
+    const primaryLayerKeys = document.querySelectorAll('.primary-layer button');
+    primaryLayerKeys.forEach(key => {
+        key.addEventListener('click', () => {
+            const keyValue = key.textContent;
+            handleClick(keyValue);
+        });
+    });
+
+    const secondaryLayerKeys = document.querySelectorAll('.secondary-layer button');
+    secondaryLayerKeys.forEach(key => {
+        key.addEventListener('click', () => {
+            const keyValue = key.textContent;
+            handleClick(keyValue);
+        });
+    });
+
+
+
+    // Buttons
+    const copyButton = document.getElementById('copyButton');
+    copyButton.addEventListener('click', () => {
+        const inputField = document.getElementById('inputField');
+        inputField.select();
+        document.execCommand('copy');
+
+        copyButton.innerHTML = 'Copied <span class="badge badge-success">&#10003;</span>';
+
+        setTimeout(() => {
+            copyButton.innerHTML = 'Copy';
+        }, 2000);
+    });
+
+    const clearButton = document.getElementById('clearButton');
+    clearButton.addEventListener('click', () => {
+        const inputField = document.getElementById('inputField');
+        inputField.value = '';
+    });
+
+    const fontSizeSlider = document.getElementById('fontSizeSlider');
+    fontSizeSlider.addEventListener('input', () => {
+        const inputField = document.getElementById('inputField');
+        inputField.style.fontSize = fontSizeSlider.value + 'px';
+    });
+
+    const shiftButton = document.getElementById('shiftButton');
+    const primaryLayer = document.querySelector('.primary-layer');
+    const secondaryLayer = document.querySelector('.secondary-layer');
+
+    shiftButton.addEventListener('click', () => {
+        if (primaryLayer.style.display === 'none') {
+            primaryLayer.style.display = 'grid';
+            secondaryLayer.style.display = 'none';
+        } else {
+            primaryLayer.style.display = 'none';
+            secondaryLayer.style.display = 'grid';
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputField = document.getElementById('inputField');
+
+        inputField.addEventListener('keyup', function (event) {
+            if (event.key === 'Backspace') {
+                handleBackspace();
+            }
+        });
+    });
+
+    function handleBackspace() {
+        const inputField = document.getElementById('inputField');
+        const selectionStart = inputField.selectionStart;
+        const selectionEnd = inputField.selectionEnd;
+        const currentValue = inputField.value;
+
+        if (selectionStart === selectionEnd) {
+            if (selectionStart > 0) {
+                const newValue =
+                    currentValue.substring(0, selectionStart - 1) +
+                    currentValue.substring(selectionStart);
+                inputField.value = newValue;
+
+                inputField.setSelectionRange(selectionStart - 1, selectionStart - 1);
+            }
+        } else {
+            const newValue = currentValue.substring(0, selectionStart) + currentValue.substring(selectionEnd);
+            inputField.value = newValue;
+
+            inputField.setSelectionRange(selectionStart, selectionStart);
+        }
+    }
+
+    const backspaceButton = document.getElementById('backspaceButton');
+    backspaceButton.addEventListener('click', () => {
+        handleBackspace();
+    });
+
+
+    function makeTextareaEditable() {
+        const inputField = document.getElementById('inputField');
+        inputField.removeAttribute('readonly');
+    }
+
+    const inputField = document.getElementById('inputField');
+    inputField.addEventListener('click', () => {
+        makeTextareaEditable();
+    });
+
+
+    function exportToImage() {
+        const inputField = document.getElementById('inputField');
+        const fontSelect = document.getElementById('fontSelect');
+        const containerWidth = inputField.offsetWidth;
+        const totalHeight = inputField.scrollHeight;
+        const scrollbarWidth = inputField.offsetWidth - inputField.clientWidth;
+        const selectedFont = fontSelect.value;
+
+        inputField.style.height = totalHeight + 'px';
+        inputField.style.fontFamily = selectedFont;
+        inputField.style.overflow = 'hidden';
+
+        const exportContainer = document.createElement('div');
+        exportContainer.style.position = 'absolute';
+        exportContainer.style.top = '0';
+        exportContainer.style.left = '0';
+        exportContainer.style.width = containerWidth + 'px';
+        exportContainer.style.height = totalHeight + 'px';
+        document.body.appendChild(exportContainer);
+
+        function captureChunk(offset, height) {
+            const textareaClone = inputField.cloneNode(true);
+            textareaClone.style.position = 'relative';
+            textareaClone.style.top = '-' + offset + 'px';
+            textareaClone.style.width = containerWidth + 'px';
+            textareaClone.style.height = height + 'px';
+            textareaClone.style.fontFamily = selectedFont;
+            textareaClone.scrollTop = offset;
+
+            exportContainer.appendChild(textareaClone);
+
+            domtoimage.toPng(textareaClone)
+                .then(function (dataUrl) {
+                    const img = new Image();
+                    img.src = dataUrl;
+                    exportContainer.appendChild(img);
+                    exportContainer.removeChild(textareaClone);
+
+                    if (offset + height < totalHeight) {
+                        captureChunk(offset + height, height);
+                    } else {
+                        inputField.style.height = 'auto';
+                        inputField.style.fontFamily = selectedFont;
+                        inputField.style.overflow = 'auto';
+
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = containerWidth - scrollbarWidth;
+                        canvas.height = height;
+                        let offsetY = 0;
+                        const images = exportContainer.querySelectorAll('img');
+                        images.forEach((image) => {
+                            ctx.drawImage(image, 0, offsetY);
+                            offsetY += image.height;
+                        });
+
+                        const currentTime = new Date();
+                        const formattedDate = currentTime.toLocaleDateString();
+                        const formattedTime = currentTime.toLocaleTimeString().replace(/:/g, '-');
+
+                        const imageName = `kavitext-${formattedDate}-${formattedTime}.png`;
+
+                        const imageDataUrl = canvas.toDataURL('image/png');
+                        const link = document.createElement('a');
+                        link.href = imageDataUrl;
+                        link.download = imageName;
+                        link.click();
+
+                        document.body.removeChild(exportContainer);
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Image export error:', error);
+                });
+        }
+
+        captureChunk(0, inputField.clientHeight);
+    }
+
+
+
+
+    const exportButton = document.getElementById('exportButton');
+    exportButton.addEventListener('click', () => {
+        exportToImage();
+    });
+
+    function exportToPDF() {
+        const inputField = document.getElementById('inputField');
+        const text = inputField.value;
+        const doc = new jsPDF();
+
+        const customFont = new FontFace('TantularKawi', 'url(TantularKawi.woff)');
+
+        customFont.load().then(loadedFont => {
+            doc.addFont('TantularKawi', 'TantularKawi', 'normal');
+            doc.setFont('TantularKawi', 'normal');
+            doc.setFontSize(12);
+            doc.text(text, 10, 10);
+
+            const fileName = 'exported_text.pdf';
+            doc.save(fileName);
+        }).catch(error => {
+            console.error('Font loading failed:', error);
+        });
+    }
+
+    const exportPDFButton = document.getElementById('exportPDFButton');
+    exportPDFButton.addEventListener('click', () => {
+        exportToPDF();
+    });
+
+
+
+    function updateFont() {
+        const fontSelect = document.getElementById('fontSelect');
+        const selectedFont = fontSelect.value;
+        const inputField = document.getElementById('inputField');
+        const buttons = document.querySelectorAll('.primary-layer button, .secondary-layer button');
+
+        inputField.style.fontFamily = selectedFont + ', Arial, sans-serif';
+
+        buttons.forEach(button => {
+            button.style.fontFamily = selectedFont + ', Arial, sans-serif';
+        });
+    }
+
+    const fontSelect = document.getElementById('fontSelect');
+    fontSelect.addEventListener('change', updateFont);
+
+
+</script>
+<footer>
+    <hr>
+    <small>
+        <center> Kawi Virtual Keyboard (1.0)<br> Kawi Society (2023)</center>
+    </small>
+</footer>
+</body>
+
+</html>
